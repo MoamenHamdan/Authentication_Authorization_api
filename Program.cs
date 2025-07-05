@@ -33,7 +33,7 @@ builder.Services.AddDbContext<AppDB>(options =>
 );
 
 // JWT Auth Configuration
-var jwtSecret = builder.Configuration["AppSetting:JWTSecret"];
+var jwtSecret = builder.Configuration["appsettings:JWTSecret"];
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!));
 
 builder.Services.AddAuthentication(options =>
@@ -114,7 +114,7 @@ app.MapPost("/api/signin", async (
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(10),
+            Expires = DateTime.UtcNow.AddDays(10),
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
 
