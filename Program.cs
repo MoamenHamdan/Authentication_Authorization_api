@@ -124,10 +124,7 @@ app.MapPost("/api/signin", async (
 
         return Results.Ok(new
         {
-            token = jwt,
-            userId = user.Id,
-            email = user.Email,
-            fullName = user.FullName
+            token = jwt
         });
     }
 
