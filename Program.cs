@@ -26,7 +26,7 @@ builder.Services.ConfigureIdentityHandlerAndStores();
 // Configure EF Core
 builder.Services.AddDbContext<AppDB>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-); 
+);       
 
 // JWT Auth Configuration
 var jwtSecret = builder.Configuration["appsettings:JWTSecret"];
