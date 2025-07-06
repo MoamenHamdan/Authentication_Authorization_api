@@ -1,3 +1,4 @@
+using Authentication_Authorization_api.Extenstions;
 using Authentication_Authorization_api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -15,22 +16,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Identity services
-builder.Services
-    .AddIdentityApiEndpoints<AppUser>()
-    .AddEntityFrameworkStores<AppDB>();
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.User.RequireUniqueEmail = true;
-});
+
+builder.Services.AddIdentityHandlerAndStores();
+
+builder.Services.ConfigureIdentityHandlerAndStores();
+
 
 // Configure EF Core
 builder.Services.AddDbContext<AppDB>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+); 
 
 // JWT Auth Configuration
 var jwtSecret = builder.Configuration["appsettings:JWTSecret"];
