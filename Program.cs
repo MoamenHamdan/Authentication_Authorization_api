@@ -13,40 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services
 builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 
 
-builder.Services.AddIdentityHandlerAndStores();
 
-builder.Services.ConfigureIdentityHandlerAndStores();
+builder.Services.AddSwaggerExplorer()
+                .InjectDBContext(builder.Configuration)
+                .AddIdentityHandlerAndStores()
+                .ConfigureIdentityHandlerAndStores()
+                .AddIdentityAuth(builder.Configuration);
 
-
-// Configure EF Core
-builder.Services.AddDbContext<AppDB>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);       
-
-// JWT Auth Configuration
-var jwtSecret = builder.Configuration["appsettings:JWTSecret"];
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!));
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = key,
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
 
 builder.Services.AddCors(options =>
 {
@@ -57,14 +33,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-// Middleware pipeline
-app.UseSwagger();
-app.UseSwaggerUI();
 app.UseHttpsRedirection();
-app.UseCors();
-app.UseAuthentication();
-app.UseAuthorization();
+
+app.ConfigSwaggerExplorer()
+    .ConfigCORS(builder.Configuration)
+    .AddIdentityMiddleWares();
+
 
 app.MapControllers();
 
