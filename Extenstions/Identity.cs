@@ -1,64 +1,86 @@
 ﻿using Authentication_Authorization_api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
-namespace Authentication_Authorization_api.Extenstions
+namespace AuthECAPI.Controllers
 {
-    public static class Identity
+    public class UserRegistrationModel
     {
-        public static IServiceCollection AddIdentityHandlerAndStores(this IServiceCollection services)
-        {
-            services
-                .AddIdentityApiEndpoints<AppUser>()
-                .AddEntityFrameworkStores<AppDB>();
-            return services;
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string FullName { get; set; }
+        public string Role { get; set; }
+        public string Gender { get; set; }
+        public int Age { get; set; }
+        public int? LibraryID { get; set; }
+    }
 
-      
+    public class LoginModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    public static class IdentityUserEndpoints
+    {
+        
+        public static IServiceCollection AddIdentityHandlersAndStores(this IServiceCollection services)
+        {
+            services.AddIdentityApiEndpoints<AppUser>()
+                    .AddEntityFrameworkStores<AppDB>();
+            return services;
         }
-        public static IServiceCollection ConfigureIdentityHandlerAndStores(this IServiceCollection services)
+
+        public static IServiceCollection ConfigureIdentityOptions(this IServiceCollection services)
         {
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
                 options.User.RequireUniqueEmail = true;
             });
             return services;
         }
 
-        public static IServiceCollection AddIdentityAuth(this IServiceCollection services, IConfiguration config)
+        //Auth = Authentication + Authorization
+        public static IServiceCollection AddIdentityAuth(
+            this IServiceCollection services,
+            IConfiguration config)
         {
-
-            // JWT Auth Configuration
-            var jwtSecret = config["appsettings:JWTSecret"];
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!));
-
-            services.AddAuthentication(options =>
+            services.AddAuthentication(x =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+                x.DefaultAuthenticateScheme =
+                x.DefaultChallengeScheme =
+                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(y =>
             {
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
+                y.SaveToken = false;
+                y.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = key,
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(
+                                config["AppSettings:JWTSecret"]!))
                 };
             });
             return services;
         }
 
-        public static WebApplication AddIdentityMiddleWares(this WebApplication app)
+        public static WebApplication AddIdentityAuthMiddlewares(this WebApplication app)
         {
-
             app.UseAuthentication();
             app.UseAuthorization();
             return app;
         }
+
     }
 }
