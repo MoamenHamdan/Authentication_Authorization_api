@@ -1,8 +1,8 @@
 ﻿using Authentication_Authorization_api.Models;
 
-namespace Authentication_Authorization_api.Extenstions
+namespace Authentication_Authorization_api.Extensions
 {
-    public static class AppConfigExtentions
+    public static class AppConfigExtensions
     {
 
   

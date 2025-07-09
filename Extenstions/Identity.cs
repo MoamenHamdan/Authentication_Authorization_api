@@ -10,7 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace AuthECAPI.Controllers
+namespace Authentication_Authorization_api.Extensions
 {
     public class UserRegistrationModel
     {

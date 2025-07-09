@@ -1,6 +1,5 @@
-using AuthECAPI.Controllers;
 using Authentication_Authorization_api.Controllers;
-using Authentication_Authorization_api.Extenstions;
+using Authentication_Authorization_api.Extensions;
 using Authentication_Authorization_api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +31,7 @@ app.MapControllers();
 app.MapGroup("/api")
    .MapIdentityApi<AppUser>();
 app.MapGroup("/api")
-   .MapIdentityUserEndpoints();
+   .MapIdentityUserEndpoints()
+   .MapAccountEndpoints();
 
 app.Run();

@@ -1,9 +1,9 @@
 ﻿using Authentication_Authorization_api.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Authentication_Authorization_api.Extenstions
+namespace Authentication_Authorization_api.Extensions
 {
-    public static class SwaggerExtentions
+    public static class SwaggerExtensions
     {
         public static IServiceCollection AddSwaggerExplorer(this IServiceCollection services)
         {
