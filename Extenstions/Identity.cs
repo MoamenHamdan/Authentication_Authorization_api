@@ -78,6 +78,12 @@ namespace Authentication_Authorization_api.Extensions
                 .Build();
 
                 options.AddPolicy("HasLibraryId", policy => policy.RequireClaim("LibraryID"));
+                options.AddPolicy("FemalesOnly", policy => policy.RequireClaim("Gender", "Female"));
+                options.AddPolicy("Under10", policy => policy.RequireAssertion(context =>
+                {
+                    var ageClaim = context.User.FindFirst("Age")?.Value;
+                    return ageClaim != null && int.TryParse(ageClaim, out var age) && age < 10;
+                }));
             });
             return services;
         }
