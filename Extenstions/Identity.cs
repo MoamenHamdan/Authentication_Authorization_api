@@ -35,7 +35,8 @@ namespace Authentication_Authorization_api.Extensions
         public static IServiceCollection AddIdentityHandlersAndStores(this IServiceCollection services)
         {
             services.AddIdentityApiEndpoints<AppUser>()
-                    .AddEntityFrameworkStores<AppDB>();
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<AppDB>();
             return services;
         }
 
@@ -75,6 +76,8 @@ namespace Authentication_Authorization_api.Extensions
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build();
+
+                options.AddPolicy("HasLibraryId", policy => policy.RequireClaim("LibraryID"));
             });
             return services;
         }
