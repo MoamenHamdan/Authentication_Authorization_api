@@ -31,7 +31,7 @@ namespace Authentication_Authorization_api.Extensions
 
     public static class IdentityUserEndpoints
     {
-        
+
         public static IServiceCollection AddIdentityHandlersAndStores(this IServiceCollection services)
         {
             services.AddIdentityApiEndpoints<AppUser>()
@@ -56,12 +56,7 @@ namespace Authentication_Authorization_api.Extensions
             this IServiceCollection services,
             IConfiguration config)
         {
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme =
-                x.DefaultChallengeScheme =
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(y =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(y =>
             {
                 y.SaveToken = false;
                 y.TokenValidationParameters = new TokenValidationParameters
@@ -69,8 +64,17 @@ namespace Authentication_Authorization_api.Extensions
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(
-                                config["AppSettings:JWTSecret"]!))
+                                config["AppSettings:JWTSecret"]!)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                 };
+            });
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                .RequireAuthenticatedUser()
+                .Build();
             });
             return services;
         }
