@@ -1,4 +1,5 @@
 ﻿using Authentication_Authorization_api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -26,11 +27,12 @@ namespace Authentication_Authorization_api.Controllers
     {
         public static IEndpointRouteBuilder MapIdentityUserEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapPost("/signup", CreateUser);
-            app.MapPost("/signin", SignIn);
+            app.MapPost("/signup", CreateUser).AllowAnonymous();
+            app.MapPost("/signin", SignIn).AllowAnonymous();
             return app;
         }
-
+        //or we can you this 
+      [AllowAnonymous]
         private static async Task<IResult> CreateUser(
             UserManager<AppUser> userManager,
             [FromBody] UserRegistrationModel userRegistrationModel)
